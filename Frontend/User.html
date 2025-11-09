@@ -431,7 +431,7 @@ reportForm.addEventListener('submit', async e => {
   }
 
   try {
-    const res = await fetch("http://localhost:5000/report", {
+    const res = await fetch("https://street-issue-report-backend.onrender.com/report", {
       method: "POST",
       body: formData,
     });
