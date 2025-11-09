@@ -148,7 +148,7 @@
   // ✅ Fetch reports from MongoDB server
   async function loadReportsFromServer() {
     try {
-      const res = await fetch('http://localhost:5000/reports');
+      const res = await fetch('https://street-issue-report-backend.onrender.com/reports');
       if (!res.ok) throw new Error('Failed to fetch reports');
       return await res.json();
     } catch (err) {
