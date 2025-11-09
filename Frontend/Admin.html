@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Street Issues — Admin View</title>
+    <link rel="icon" type="image/png" href="./logo.jpeg" />
+    <style>
+        :root {
+            --bg: #f1b900;
+            --card: #ffffff;
+            --accent: #efff13;
+            --muted: #af0000;
+            --danger: #a80000;
+            --success: #facc15;
+            --max-width: 900px;
+            --radius: 12px;
+            --shadow: 0 6px 18px rgba(223, 7, 7, 0.952);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        }
+
+
+        #reportsList {
+  overflow-x: auto; /* allow horizontal scroll */
+}
+
+#reportsList table {
+  width: 100%;
+  min-width: 800px; /* ensures table is readable on smaller screens */
+  border-collapse: collapse;
+}
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(180deg, #cc0202 0%, var(--bg) 100%);
+            font-family: inherit;
+        }
+
+        .container {
+            width: 100%;
+            max-width: var(--max-width);
+            margin: 0 auto;
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow-x: auto;
+            margin-top: 12px;
+        }
+
+        .table th,
+        .table td {
+            padding: 10px;
+            border-bottom: 1px solid rgba(15, 23, 42, 0.05);
+            text-align: left;
+            white-space: nowrap;
+            max-width: 220px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .table th {
+            font-size: 13px;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .admin-photo {
+            max-width: 80px;
+            border-radius: 6px;
+        }
+
+        .btn {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .btn.primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn.danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .small {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 8px;
+            display: block;
+        }
+
+        #adminArea {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Admin — Street Issues Reports</h1>
+
+        <label>Admin password:</label>
+        <input type="password" id="adminPassword" placeholder="Enter admin password" />
+        <button id="adminLogin" class="btn primary">Login</button>
+      
+        <div id="adminArea">
+            <h3>Reports</h3>
+            <div id="noReports" class="small">No reports yet.</div>
+            <div id="reportsList"></div>
+            <button id="clearAll" class="btn danger">Clear All Reports</button>
+        </div>
+    </div>
+     
+<script>
+  const ADMIN_PASSWORD = 'Kishore@10';
+  const adminPassword = document.getElementById('adminPassword');
+  const adminLogin = document.getElementById('adminLogin');
+  const adminArea = document.getElementById('adminArea');
+  const reportsList = document.getElementById('reportsList');
+  const noReports = document.getElementById('noReports');
+  const clearAllBtn = document.getElementById('clearAll');
+
+  // ✅ Fetch reports from MongoDB server
+  async function loadReportsFromServer() {
+    try {
+      const res = await fetch('http://localhost:5000/reports');
+      if (!res.ok) throw new Error('Failed to fetch reports');
+      return await res.json();
+    } catch (err) {
+      console.error(err);
+      alert('❌ Failed to load reports from server');
+      return [];
+    }
+  }
+
+  // Escape HTML (for safety)
+  function escapeHtml(s) {
+    if (!s) return '';
+    return s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  }
+
+  // ✅ Render Admin Reports
+  async function renderAdmin() {
+    const list = await loadReportsFromServer();
+    reportsList.innerHTML = '';
+
+    if (!list.length) {
+      noReports.style.display = 'block';
+      return;
+    }
+    noReports.style.display = 'none';
+
+    const table = document.createElement('table');
+    table.className = 'table';
+
+    const thead = document.createElement('thead');
+    thead.innerHTML = `
+      <tr>
+        <th>Ref ID</th>
+        <th>Name</th>
+        <th>Mobile</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Location</th>
+        <th>Photo</th>
+        <th>Time</th>
+        <th>Action</th>
+      </tr>`;
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+
+    for (const r of list) {
+      const timeText = new Date(r.time).toLocaleString();
+      const locBtn = r.location
+        ? `<a href="https://www.google.com/maps?q=${encodeURIComponent(r.location)}" 
+            target="_blank" 
+            style="padding:6px 10px;background:#efff13;color:#000;border-radius:6px;text-decoration:none;">View Map</a>`
+        : 'N/A';
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${escapeHtml(r.refid)}</strong></td>
+        <td>${escapeHtml(r.name)}</td>
+        <td>${escapeHtml(r.mobile)}</td>
+        <td>${escapeHtml(r.type)}</td>
+        <td style="max-width:220px">${escapeHtml(r.description || '')}</td>
+        <td>${locBtn}</td>
+        <td>${r.image ? `<img class="admin-photo" src="http://localhost:5000${r.image}" alt="photo"/>` : '—'}</td>
+        <td>${timeText}</td>
+        <td>
+          <button class="btn primary solution-btn" 
+            onclick="this.textContent='Completed';this.style.backgroundColor='green';this.disabled=true;">
+            Mark Completed
+          </button>
+        </td>`;
+      tbody.appendChild(tr);
+    }
+
+    table.appendChild(tbody);
+    reportsList.appendChild(table);
+  }
+
+  // ✅ Admin Login
+  adminLogin.addEventListener('click', () => {
+    const p = adminPassword.value || '';
+    if (p !== ADMIN_PASSWORD) {
+      alert('Incorrect password');
+      return;
+    }
+    adminArea.style.display = 'block';
+    renderAdmin();
+  });
+
+  // ❌ Clear button (just refreshes now)
+  clearAllBtn.addEventListener('click', () => {
+    if (!confirm('Reload reports from server?')) return;
+    renderAdmin();
+  });
+</script>
+
+</body>
+
+</html>
