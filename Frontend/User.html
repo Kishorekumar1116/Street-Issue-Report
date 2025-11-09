@@ -311,7 +311,7 @@
     </div>
 
   <script>
-const SERVER_URL = "https://street-issue-report-backend.onrender.com/report"; // change if hosted online
+const SERVER_URL = "https://street-issue-report-backend-1.onrender.com/report"; // change if hosted online
 
 const STORAGE_KEY = 'street_issues_reports_v1';
 let currentStep = 1;
@@ -431,7 +431,7 @@ reportForm.addEventListener('submit', async e => {
   }
 
   try {
-    const res = await fetch("https://street-issue-report-backend.onrender.com/report", {
+    const res = await fetch("https://street-issue-report-backend-1.onrender.com/report", {
       method: "POST",
       body: formData,
     });
