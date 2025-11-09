@@ -1,15 +1,28 @@
-# Node dependencies
+# Node.js
 node_modules/
+npm-debug.log
+yarn-error.log
 
-# Uploaded files
-uploads/
-
-# Environment files
+# Environment variables
 .env
+.env.local
+.env.development
+.env.production
 
-# Log files
+# Build and dist folders
+dist/
+build/
+.cache/
+
+# Logs
+logs/
 *.log
 
-# System files
+# IDE & system files
+.vscode/
+.idea/
 .DS_Store
 Thumbs.db
+
+# Optional: If using uploads folder
+uploads/
