@@ -148,7 +148,7 @@
   // ✅ Fetch reports from MongoDB server
   async function loadReportsFromServer() {
     try {
-      const res = await fetch('https://street-issue-report-backend.onrender.com/reports');
+      const res = await fetch('https://street-issue-report-backend-1.onrender.com/reports');
       if (!res.ok) throw new Error('Failed to fetch reports');
       return await res.json();
     } catch (err) {
@@ -211,7 +211,7 @@
         <td>${escapeHtml(r.type)}</td>
         <td style="max-width:220px">${escapeHtml(r.description || '')}</td>
         <td>${locBtn}</td>
-        <td>${r.image ? `<img class="admin-photo" src="http://localhost:5000${r.image}" alt="photo"/>` : '—'}</td>
+        <td>${r.image ? `<img class="admin-photo" src="https://street-issue-report-backend-1.onrender.com${r.image}" alt="photo"/>` : '—'}</td>
         <td>${timeText}</td>
         <td>
           <button class="btn primary solution-btn" 
