@@ -117,6 +117,21 @@
             display: none;
             margin-top: 20px;
         }
+        #clearAll {
+  background: #ff0000;
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-top: 15px;
+  cursor: pointer;
+}
+
+#clearAll:hover {
+  background: #cc0000;
+}
+
     </style>
 </head>
 
@@ -237,11 +252,24 @@
     renderAdmin();
   });
 
-  // ❌ Clear button (just refreshes now)
-  clearAllBtn.addEventListener('click', () => {
-    if (!confirm('Reload reports from server?')) return;
-    renderAdmin();
-  });
+// ✅ Clear All Reports (actually delete from backend)
+clearAllBtn.addEventListener("click", async () => {
+  if (!confirm("⚠️ Are you sure you want to delete ALL reports? This cannot be undone.")) return;
+
+  try {
+    const res = await fetch("https://street-issue-report-backend-production.up.railway.app/clear-reports", {
+      method: "DELETE",
+    });
+
+    const data = await res.json();
+    alert(data.message);
+    renderAdmin(); // Refresh the table
+  } catch (err) {
+    console.error("❌ Error clearing reports:", err);
+    alert("Failed to clear reports!");
+  }
+});
+
 </script>
 
 </body>
