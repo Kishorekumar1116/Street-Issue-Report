@@ -429,7 +429,7 @@ reportForm.addEventListener('submit', async e => {
     formData.append("image", attachedPhotoFile);
   }
   try {
-    const res = await fetch("https://street-issue-report-backend-1.onrender.com/report", {
+    const res = await fetch("street-issue-report-backend-production.up.railway.app/report", {
       method: "POST",
       body: formData,
     });
